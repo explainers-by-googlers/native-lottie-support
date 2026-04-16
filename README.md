@@ -1,185 +1,111 @@
-# Explainer for the TODO API
+# Explainer for Native Lottie support
 
-**Instructions for the explainer author: Search for "todo" in this repository and update all the
-instances as appropriate. For the instances in `index.bs`, update the repository name, but you can
-leave the rest until you start the specification. Then delete the TODOs and this block of text.**
-
-This proposal is an early design sketch by [TODO: team] to describe the problem below and solicit
+This proposal is an early design sketch by the Skia team to describe the problem below and solicit
 feedback on the proposed solution. It has not been approved to ship in Chrome.
 
-TODO: Fill in the whole explainer template below using https://tag.w3.org/explainers/ as a
-reference. Look for [brackets].
-
-## Proponents
-
-- [Proponent team 1]
-- [Proponent team 2]
-- [etc.]
-
 ## Participate
-- https://github.com/explainers-by-googlers/[your-repository-name]/issues
-- [Discussion forum]
-
-## Table of Contents [if the explainer is longer than one printed page]
-
-<!-- Update this table of contents by running `npx doctoc README.md` -->
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [Introduction](#introduction)
-- [Goals](#goals)
-- [Non-goals](#non-goals)
-- [User research](#user-research)
-- [Use cases](#use-cases)
-  - [Use case 1](#use-case-1)
-  - [Use case 2](#use-case-2)
-- [[Potential Solution]](#potential-solution)
-  - [How this solution would solve the use cases](#how-this-solution-would-solve-the-use-cases)
-    - [Use case 1](#use-case-1-1)
-    - [Use case 2](#use-case-2-1)
-- [Detailed design discussion](#detailed-design-discussion)
-  - [[Tricky design choice #1]](#tricky-design-choice-1)
-  - [[Tricky design choice 2]](#tricky-design-choice-2)
-- [Considered alternatives](#considered-alternatives)
-  - [[Alternative 1]](#alternative-1)
-  - [[Alternative 2]](#alternative-2)
-- [Security and Privacy Considerations](#security-and-privacy-considerations)
-- [Stakeholder Feedback / Opposition](#stakeholder-feedback--opposition)
-- [References & acknowledgements](#references--acknowledgements)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+- [Discussion forum](https://github.com/explainers-by-googlers/native-lottie-support/issues)
 
 ## Introduction
 
-[The "executive summary" or "abstract".
-Explain in a few sentences what the goals of the project are,
-and a brief overview of how the solution works.
-This should be no more than 1-2 paragraphs.]
+<img src="lottie_logo.gif" width="300"/><br>
+
+[Lottie](https://lottiefiles.com/what-is-lottie) is a popular vector animation format used for motion graphics in both native and web applications, and developed as an open specification under the Joint Development Foundation
+and the [Lottie Animation Community](https://lottie.github.io/) working group.  The format is largely based on the Adobe AfterEffects animation model, and various tools exist for exporting AE animations to Lottie. Lottie is also supported by several other [design tools](https://lottiefiles.com/integrations).
+
+Current web deployment solutions rely on external players and present challenges due to necessary compromises on performance, feature support, and application download size. This proposal aims to bring first-class Lottie support to the web platform by exposing native Lottie functionality in the browser, in the form of a video codec. This allows taking advantage of existing mature video decoding infrastructure, offering an accelerated decoding path and acceptable playback control via existing video APIs.
 
 ## Goals
 
-[What is the **end-user need** which this project aims to address? Make this section short, and
-elaborate in the Use cases section.]
+First-class Lottie support on the web platform:
+
+- **Feature parity** with state-of-the-art native engines, without a download size penalty.
+- **Uncompromising animation performance** - Lottie animations should be regarded as lightweight assets, with minimal impact on web app performance.
 
 ## Non-goals
 
-[If there are "adjacent" goals which may appear to be in scope but aren't,
-enumerate them here. This section may be fleshed out as your design progresses and you encounter necessary technical and other trade-offs.]
-
-## User research
-
-[If any user research has been conducted to inform your design choices,
-discuss the process and findings. User research should be more common than it is.]
+- **Expose Lottie-specific APIs** such as theming, asset substitution, etc.
 
 ## Use cases
 
-[Describe in detail what problems end-users are facing, which this project is trying to solve. A
-common mistake in this section is to take a web developer's or server operator's perspective, which
-makes reviewers worry that the proposal will violate [RFC 8890, The Internet is for End
-Users](https://www.rfc-editor.org/rfc/rfc8890).]
+### High-performance, rich, vector graphics animations
 
-### Use case 1
+Developers are looking to include complex vector graphics animations such as hero illustrations or
+interactive UI elements, without the overhead of large support libraries.  For an optimal user experience,
+these animations assets should:
 
-### Use case 2
+1) minimize the page load impact
+2) minimize the rendering overhead and general performance impact
+3) offer a rich feature set to support delightful motion design expressions
 
-<!-- In your initial explainer, you shouldn't be attached or appear attached to any of the potential
-solutions you describe below this. -->
+## Potential Solution: Native Lottie as a video codec
 
-## [Potential Solution]
+In order to address all three axes (performance, features, download size), we propose exposing native
+Lottie support in the browser as a new video codec.
 
-[For each related element of the proposed solution - be it an additional JS method, a new object, a new element, a new concept etc., create a section which briefly describes it.]
-
-```js
-// Provide example code - not IDL - demonstrating the design of the feature.
-
-// If this API can be used on its own to address a user need,
-// link it back to one of the scenarios in the goals section.
-
-// If you need to show how to get the feature set up
-// (initialized, or using permissions, etc.), include that too.
+```html
+<video autoplay loop muted playsinline>
+  <source src="animations/hero-illustration.lot" type="video/lottie+json">
+</video>
 ```
 
-[Where necessary, provide links to longer explanations of the relevant pre-existing concepts and API.
-If there is no suitable external documentation, you might like to provide supplementary information as an appendix in this document, and provide an internal link where appropriate.]
-
-[If this is already specced, link to the relevant section of the spec.]
-
-[If spec work is in progress, link to the PR or draft of the spec.]
-
-[If you have more potential solutions in mind, add ## Potential Solution 2, 3, etc. sections.]
+The video source approach takes advantage of existing mature video decoding infrastructure, thus minimizing any new API-related concerns. It also offers an accelerated decoding path for maximizing performance, and acceptable playback/timeline control functionality via existing video APIs.
 
 ### How this solution would solve the use cases
 
-[If there are a suite of interacting APIs, show how they work together to solve the use cases described.]
+#### High-performance, rich, vector graphics animations
 
-#### Use case 1
+By integrating Lottie support directly into the browser's video stack, animations can be decoded and rendered with high efficiency, similar to traditional video formats, but retaining the vector nature and small file size of Lottie JSON. This eliminates the need for large external libraries and provides better performance than JS-driven rendering.
 
-[Description of the end-user scenario]
-
-```js
-// Sample code demonstrating how to use these APIs to address that scenario.
-```
-
-#### Use case 2
-
-[etc.]
+Integrated support also allows implementors to target the full Lottie feature set, unconstrained by
+existing web graphics APIs.
 
 ## Detailed design discussion
 
-### [Tricky design choice #1]
+### Lack of Lottie-specific APIs
 
-[Talk through the tradeoffs in coming to the specific design point you want to make.]
+A potential downside is the lack of Lottie-specific APIs - e.g. the ability to customize animation slots (theming), or interactivity (more of a future concern as interactive functionality is not part of the spec at this time).
 
-```js
-// Illustrated with example code.
-```
+## Alternatives considered
 
-[This may be an open question,
-in which case you should link to any active discussion threads.]
+### Existing web animation APIs (SVG/SMIL, WAAPI)
 
-### [Tricky design choice 2]
+One of the main selling points for Lottie and the major driver behind its popularity is the authoring story:
+motion designers use flagship authoring tools such as Adobe AfterEffects to generate animation assets with minimal
+friction.  Other animation formats fall short in terms of designer affinity and feature set.
 
-[etc.]
+### Existing Lottie rendering engines
 
-## Considered alternatives
+#### LottieWeb
 
-[This should include as many alternatives as you can,
-from high level architectural decisions down to alternative naming choices.]
+LottieWeb is a JS Lottie engine that can render either to a Canvas 2d or to SVG/DOM.
 
-### [Alternative 1]
+The Canvas 2d backend has better performance but limited feature support, while the SVG backend supports some additional features while lagging in performance (DOM-level animation).
 
-[Describe an alternative which was considered,
-and why you decided against it.]
+Both backends are limited feature wise compared to the general Lottie feature set, due to web platform
+graphics APIs constraints (Canvas 2d, SVG).
 
-### [Alternative 2]
+The library size is in the 250-600KB range, depending on build configuration.
 
-[etc.]
+#### WASM engines
+There are several native Lottie engines available (notably Skia’s Skottie, and LottieFiles’ dotLottie engine) that can be used in web apps via WASM.  They back onto WebGL/WebGPU, so performance is generally good - as is the supported feature set.
+
+The main downside is the download size: since these engines must include full rendering stacks (e.g. Skia + third-party deps in the case of Skottie), the binary size is an order of magnitude higher than LottieWeb (SkottieWASM: 3.2MB compressed), making them poorly suited for anything other than specialized apps.
+
+### New element/API (\<lottie\>)
+
+- **Pros**: Support for current and future Lottie features (theming, interactivity, etc).
+- **Cons**: Large spec surface, unclear standardization path.
+
+### Animated image codec
+
+- **Pros**: Minimal extension to existing APIs, similar to the video codec approach.
+- **Cons**: Extremely limited timeline/playback controls. Internal abstractions are biased towards software rendering.
 
 ## Security and Privacy Considerations
 
-[Describe any interesting answers you give to the [Security and Privacy Self-Review
+[TODO Describe any interesting answers you give to the [Security and Privacy Self-Review
 Questionnaire](https://www.w3.org/TR/security-privacy-questionnaire/) and any interesting ways that
 your feature interacts with [Chromium's Web Platform Security
 Guidelines](https://chromium.googlesource.com/chromium/src/+/master/docs/security/web-platform-security-guidelines.md).]
 
-## Stakeholder Feedback / Opposition
-
-[Implementors and other stakeholders may already have publicly stated positions on this work. If you can, list them here with links to evidence as appropriate.]
-
-- [Implementor A] : Positive
-- [Stakeholder B] : No signals
-- [Implementor C] : Negative
-
-[If appropriate, explain the reasons given by other implementors for their concerns.]
-
-## References & acknowledgements
-
-[Your design will change and be informed by many people; acknowledge them in an ongoing way! It helps build community and, as we only get by through the contributions of many, is only fair.]
-
-[Unless you have a specific reason not to, these should be in alphabetical order.]
-
-Many thanks for valuable feedback and advice from:
-
-- [Person 1]
-- [Person 2]
-- [etc.]
