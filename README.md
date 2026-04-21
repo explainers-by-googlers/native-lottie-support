@@ -66,6 +66,8 @@ existing web graphics APIs.
 
 A potential downside is the lack of Lottie-specific APIs - e.g. the ability to customize animation slots (theming), or interactivity (more of a future concern as interactive functionality is not part of the spec at this time).
 
+An altenative design which would address these limitations involves the introduction of a new /<lottie/> element and related JS APIs.  While more comprehensive in terms of Lottie capabilities, such an approach would require a large spec surface, and likely face standardization challenges.
+
 ## Alternatives considered
 
 ### Existing web animation APIs (SVG/SMIL, WAAPI)
@@ -91,16 +93,6 @@ The library size is in the 250-600KB range, depending on build configuration.
 There are several native Lottie engines available (notably Skia’s Skottie, and LottieFiles’ dotLottie engine) that can be used in web apps via WASM.  They back onto WebGL/WebGPU, so performance is generally good - as is the supported feature set.
 
 The main downside is the download size: since these engines must include full rendering stacks (e.g. Skia + third-party deps in the case of Skottie), the binary size is an order of magnitude higher than LottieWeb (SkottieWASM: 3.2MB compressed), making them poorly suited for anything other than specialized apps.
-
-### New element/API (\<lottie\>)
-
-- **Pros**: Support for current and future Lottie features (theming, interactivity, etc).
-- **Cons**: Large spec surface, unclear standardization path.
-
-### Animated image codec
-
-- **Pros**: Minimal extension to existing APIs, similar to the video codec approach.
-- **Cons**: Extremely limited timeline/playback controls. Internal abstractions are biased towards software rendering.
 
 ## Security and Privacy Considerations
 
